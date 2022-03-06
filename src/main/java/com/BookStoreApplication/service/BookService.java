@@ -4,12 +4,14 @@ import com.BookStoreApplication.dto.BookDTO;
 import com.BookStoreApplication.exception.BookStoreException;
 import com.BookStoreApplication.model.Book;
 import com.BookStoreApplication.repository.BookStoreRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class BookService implements IBookService{
 
     @Autowired
@@ -84,6 +86,20 @@ public class BookService implements IBookService{
     public List<Book> sortedListOfBooksInDescendingOrder() {
         List<Book> getSortedListInDesc=  bookStoreRepository.getSortedListOfBooksInDesc();
         return getSortedListInDesc;
+    }
+
+    @Override
+    public Book updateQuantity(Integer id, Integer quantity) {
+        Optional<Book> book = bookStoreRepository.findById(id);
+        if(book.isEmpty()) {
+            throw new BookStoreException("Book Record doesn't exists");
+        }
+        else {
+            book.get().setQuantity(quantity);
+            bookStoreRepository.save(book.get());
+            log.info("Quantity for book record updated successfully for id "+id);
+            return book.get();
+        }
     }
 
 

@@ -16,4 +16,6 @@ public interface ICartService {
     Cart updateRecordById(Integer cartId, CartDTO cartDTO);
 
     Cart insertItems(CartDTO cartdto);
+
+    Cart updateQuantity(Integer id, Integer quantity);
 }

@@ -21,4 +21,6 @@ public interface IBookService {
     List<Book> sortedListOfBooksInAscendingOrder();
 
     List<Book> sortedListOfBooksInDescendingOrder();
+
+    Book updateQuantity(Integer id, Integer quantity);
 }

@@ -81,5 +81,11 @@ public class BookController {
             return bookService.sortedListOfBooksInDescendingOrder();
         }
 
+    @PutMapping("/updateQuantity/{id}")
+    public ResponseEntity<ResponseDTO> updateQuantity(@PathVariable Integer id,@RequestParam Integer quantity){
+        Book newBook = bookService.updateQuantity(id,quantity);
+        ResponseDTO dto = new ResponseDTO("Quantity for book record updated successfully !",newBook);
+        return new ResponseEntity(dto,HttpStatus.OK);
+    }
 
 }
