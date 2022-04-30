@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 @Service
 public class UserService implements IUserService {
 
@@ -21,14 +23,14 @@ public class UserService implements IUserService {
     @Autowired
     TokenUtility util;
     @Override
-    public String addUser(UserDTO userDTO) {
+    public UserRegistration addUser(UserDTO userDTO) {
         UserRegistration newUser= new UserRegistration(userDTO);
         userRepository.save(newUser);
         String token = util.createToken(newUser.getUserId());
-        mailService.sendEmail(newUser.getEmail(), "Test Email", "Registered SuccessFully, hii: "
+        mailService.sendEmail(newUser.getEmail(), "Test Email", "Registered SuccessFully, hi: "
                 +newUser.getFirstName()+"Please Click here to get data-> "
                 +"http://localhost:8080/user/getBy/"+token);
-        return token;
+        return newUser;
     }
 
     @Override
@@ -36,6 +38,8 @@ public class UserService implements IUserService {
         List<UserRegistration> getUsers= userRepository.findAll();
         return getUsers;
     }
+    
+    // Get id By token 
     @Override
     public Object getUserById(String token) {
         int id=util.decodeToken(token);
@@ -71,8 +75,41 @@ public class UserService implements IUserService {
         return "User not found";
     }
 
+    // Return the user id when ever the user email is presernt.
+    @Override
+    public Integer loginUserId(String email_id) {
+      UserRegistration login = userRepository.findByEmailid(email_id).get();
+      return login.getUserId();
+    }
 
+    public UserRegistration getUserByID(int id) {
+    	Optional<UserRegistration> userOptional = userRepository.findById(id);
+    	if(userOptional.isEmpty()) {
+    		return null;
+    	}
+    	return userOptional.get();
+    }
+    
+    @Override
+	public int loginUserTest(String email_id, String password) {
+    	Optional<UserRegistration> login = userRepository.findByEmailid(email_id);
+        if(login.isPresent()){
+            String pass = login.get().getPassword();
+            System.out.println(pass);
+            System.out.println(password);
+            if(login.get().getPassword().equals(password)){
+                return 1;// sucussfull login 
+            }
 
+            else {
+                return 2;   //"Wrong Password";
+            }
+        }
+           return  0;       //"User not found";
+       }
+    
+
+    
     @Override
     public String forgotPassword(String email, String password) {
         Optional<UserRegistration> isUserPresent = userRepository.findByEmailid(email);
@@ -112,6 +149,9 @@ public class UserService implements IUserService {
     public String getToken(String email) {
         Optional<UserRegistration> userRegistration=userRepository.findByEmailid(email);
         String token=util.createToken(userRegistration.get().getUserId());
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println(token);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         mailService.sendEmail(userRegistration.get().getEmail(),"Welcome"+userRegistration.get().getFirstName(),"Token for changing password is :"+token);
         return token;
     }
@@ -145,6 +185,19 @@ public class UserService implements IUserService {
                 +"http://localhost:8080/user/update/"+token);
         return newBook;
     }
+
+	@Override
+	public UserRegistration updateRecordById(Integer id, @Valid UserDTO userDTO) {
+		  Optional<UserRegistration> addressBook = userRepository.findById(id);
+	        if(addressBook.isEmpty()) {
+	            throw new BookStoreException("User Details for id not found");
+	        }
+	        UserRegistration newBook = new UserRegistration(id,userDTO);
+	        userRepository.save(newBook);
+	        return newBook;
+	}
+
+	
 
 
 }

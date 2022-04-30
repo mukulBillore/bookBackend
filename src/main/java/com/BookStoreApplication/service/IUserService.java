@@ -5,13 +5,17 @@ import com.BookStoreApplication.dto.UserDTO;
 import com.BookStoreApplication.model.UserRegistration;
 import java.util.List;
 
+import javax.validation.Valid;
+
 public interface IUserService {
 
-    String addUser(UserDTO userDTO);
+    UserRegistration addUser(UserDTO userDTO);
 
     List<UserRegistration> getAllUsers();
 
     String loginUser(String email_id, String password);
+
+    int loginUserTest(String email_id, String password);
 
     Object getUserById(String token);
 
@@ -26,4 +30,10 @@ public interface IUserService {
     List<UserRegistration> getAllUserDataByToken(String token);
 
     UserRegistration updateRecordByToken(String token, UserDTO userDTO);
+
+	Integer loginUserId(String email_id);
+
+	UserRegistration getUserByID(int id);
+
+	UserRegistration updateRecordById(Integer id, @Valid UserDTO userDTO);
 }

@@ -1,6 +1,7 @@
 package com.BookStoreApplication.service;
 
 import com.BookStoreApplication.dto.CartDTO;
+import com.BookStoreApplication.dto.ResponseDTO;
 import com.BookStoreApplication.exception.BookStoreException;
 import com.BookStoreApplication.model.Book;
 import com.BookStoreApplication.model.Cart;
@@ -25,18 +26,41 @@ public class CartService implements ICartService{
     @Autowired
     BookStoreCartRepository bookStoreCartRepository;
 
-
+//
+//    @Override
+//    public List<Cart> getCartDetails() {
+//        List<Cart> getCartDetails=bookStoreCartRepository.findAll();
+//        if (getCartDetails.isEmpty()){
+//            throw new BookStoreException(" Not found Any Cart details ");
+//        }
+//        else {
+//            return getCartDetails;
+//        }
+//    }
+  
     @Override
-    public List<Cart> getCartDetails() {
+    public ResponseDTO getCartDetails() {
         List<Cart> getCartDetails=bookStoreCartRepository.findAll();
+        ResponseDTO dto= new ResponseDTO();
         if (getCartDetails.isEmpty()){
-            throw new BookStoreException(" Not found Any Cart details ");
-        }
-        else {
-            return getCartDetails;
-        }
-    }
+        String   message=" the cart is empty!!!";
+           dto.setMessage(message);
+           dto.setData(0);
+           return dto;
 
+              }
+        else {
+        	dto.setMessage("the list of cart items is sucussfully retrived");
+        	dto.setData(getCartDetails);
+            return dto;
+        }
+    }   
+    
+    
+    
+    
+    
+    
     @Override
     public Optional<Cart> getCartDetailsById(Integer cartId) {
         Optional<Cart> getCartData=bookStoreCartRepository.findById(cartId);
@@ -52,13 +76,14 @@ public class CartService implements ICartService{
     public Optional<Cart> deleteCartItemById(Integer cartId) {
         Optional<Cart> deleteData=bookStoreCartRepository.findById(cartId);
         if (deleteData.isPresent()){
+        	bookStoreCartRepository.deleteById(cartId);
             return deleteData;
         }
         else {
             throw new BookStoreException(" Did not get any cart for specific cart id ");
         }
 
-    }
+    }//
 
     @Override
     public Cart updateRecordById(Integer cartId, CartDTO cartDTO) {
@@ -72,7 +97,6 @@ public class CartService implements ICartService{
             if(book.isPresent() && user.isPresent()) {
                 Cart newCart = new Cart(cartId,cartDTO.getQuantity(),book.get(),user.get());
                 bookStoreCartRepository.save(newCart);
-                log.info("Cart record updated successfully for id "+cartId);
                 return newCart;
             }
             else {
@@ -105,7 +129,6 @@ public class CartService implements ICartService{
             if(quantity < book.get().getQuantity()) {
                 cart.get().setQuantity(quantity);
                 bookStoreCartRepository.save(cart.get());
-                log.info("Quantity in cart record updated successfully");
                 book.get().setQuantity(book.get().getQuantity() - (quantity - cart.get().getQuantity()));
                 bookStoreRepository.save(book.get());
                 return cart.get();

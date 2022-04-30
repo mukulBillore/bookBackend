@@ -15,46 +15,52 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/cart")
+@CrossOrigin
 public class CartController {
 
-    @Autowired
-    ICartService cartService;
+	@Autowired
+	ICartService cartService;
 
-    @PostMapping("/create")
-    public ResponseEntity<ResponseDTO> insertItem(@Valid @RequestBody CartDTO cartdto) {
-        Cart newCart = cartService.insertItems(cartdto);
-        ResponseDTO responseDTO = new ResponseDTO("User registered successfully !", newCart);
-        return new ResponseEntity(responseDTO, HttpStatus.CREATED);
-    }
-    @GetMapping("/getAll")
-    public ResponseEntity<ResponseDTO> getAllCartDetails(){
-        List<Cart> cartDetails= cartService.getCartDetails();
-        ResponseDTO responseDTO=new ResponseDTO("successfully retrieved data",cartDetails);
-        return new ResponseEntity(responseDTO,HttpStatus.OK);
-    }
+	@PostMapping("/save")
+	public ResponseEntity<ResponseDTO> insertItem(@Valid @RequestBody CartDTO cartdto) {
+		Cart newCart = cartService.insertItems(cartdto);
+		ResponseDTO responseDTO = new ResponseDTO("User registered successfully !", newCart);
+		return new ResponseEntity(responseDTO, HttpStatus.CREATED);
+	}
 
-    @GetMapping("/getById/{cartId}")
-    public ResponseEntity<ResponseDTO> getCartDetailsById(@PathVariable Integer cartId){
-        Optional<Cart> specificCartDetail=cartService.getCartDetailsById(cartId);
-        ResponseDTO responseDTO=new ResponseDTO("Cart details retrieved successfully",specificCartDetail);
-        return new ResponseEntity(responseDTO,HttpStatus.ACCEPTED);
-    }
-    @DeleteMapping("/delete/{cartId}")
-    public ResponseEntity<ResponseDTO> deleteCartById(@PathVariable Integer cartId){
-        Optional<Cart> delete=cartService.deleteCartItemById(cartId);
-        ResponseDTO responseDTO=new ResponseDTO("Cart delete successfully", delete);
-        return new ResponseEntity(responseDTO,HttpStatus.OK);
-    }
-    @PutMapping("/updateById/{cartId}")
-    public ResponseEntity<ResponseDTO> updateCartById(@PathVariable Integer cartId,@Valid @RequestBody CartDTO cartDTO){
-        Cart updateRecord = cartService.updateRecordById(cartId,cartDTO);
-        ResponseDTO dto = new ResponseDTO(" Cart Record updated successfully by Id",updateRecord);
-        return new ResponseEntity(dto,HttpStatus.ACCEPTED);
-    }
-    @PutMapping("/updateQuantity/{id}")
-    public ResponseEntity<ResponseDTO> updateQuantity(@PathVariable Integer id,@RequestParam Integer quantity){
-        Cart newCart = cartService.updateQuantity(id,quantity);
-        ResponseDTO dto = new ResponseDTO("Quantity for book record updated successfully !",newCart);
-        return new ResponseEntity(dto,HttpStatus.OK);
-    }
+	@GetMapping("/getAll")
+	public ResponseDTO getAllCartDetails() {
+		ResponseDTO responseDTO = cartService.getCartDetails();
+			return responseDTO;
+		}
+
+
+	@GetMapping("/getById/{cartId}")
+	public ResponseEntity<ResponseDTO> getCartDetailsById(@PathVariable Integer cartId) {
+		Optional<Cart> specificCartDetail = cartService.getCartDetailsById(cartId);
+		ResponseDTO responseDTO = new ResponseDTO("Cart details retrieved successfully", specificCartDetail);
+		return new ResponseEntity(responseDTO, HttpStatus.ACCEPTED);
+	}
+
+	@DeleteMapping("/delete/{cartId}")
+	public ResponseEntity<ResponseDTO> deleteCartById(@PathVariable Integer cartId) {
+		Optional<Cart> delete = cartService.deleteCartItemById(cartId);
+		ResponseDTO responseDTO = new ResponseDTO("Cart delete successfully", delete);
+		return new ResponseEntity(responseDTO, HttpStatus.OK);
+	}
+
+	@PutMapping("/updateById/{cartId}")
+	public ResponseEntity<ResponseDTO> updateCartById(@PathVariable Integer cartId,
+			@Valid @RequestBody CartDTO cartDTO) {
+		Cart updateRecord = cartService.updateRecordById(cartId, cartDTO);
+		ResponseDTO dto = new ResponseDTO(" Cart Record updated successfully by Id", updateRecord);
+		return new ResponseEntity(dto, HttpStatus.ACCEPTED);
+	}
+
+	@GetMapping("/updateCartQuantity/{id}")
+	public ResponseEntity<ResponseDTO> updateQuantity(@PathVariable Integer id, @RequestParam Integer quantity) {
+		Cart newCart = cartService.updateQuantity(id, quantity);
+		ResponseDTO dto = new ResponseDTO("Quantity for book record updated successfully !", newCart);
+		return new ResponseEntity(dto, HttpStatus.OK);
+	}
 }

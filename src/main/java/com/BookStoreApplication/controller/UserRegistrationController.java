@@ -22,14 +22,44 @@ public class UserRegistrationController {
     @Autowired
     IUserService userRegistrationService;
 
+    //hello
+    @GetMapping("/")
+    public String hello() {
+        return "welcome to user registration page";
+    }
 
-    //Login
+    // Returns  the used if the mail id is given in the parameter
+    @GetMapping("/getuserid")
+    public Integer getUserIdByEMail(@RequestParam String email) {
+    	return userRegistrationService.loginUserId(email);
+    }
+
+    //Login 
     @GetMapping("/login")
-    public String userLogin(@RequestBody UserLoginDTO userLoginDTO) {
+    public String userLogin(@RequestParam String email,@RequestParam String password) {
+    	UserLoginDTO userLoginDTO=new UserLoginDTO(email, password);
         String response = userRegistrationService.loginUser(userLoginDTO.getEmail(),userLoginDTO.getPassword());
         return response;
     }
+    
+   
 
+    // Returns the login status Login 
+    @GetMapping("/logintest")
+    public int userTestLogin(@RequestParam String email,@RequestParam String password) {
+        int status=userRegistrationService.loginUserTest(email,password);
+    	return status;
+    }
+
+    //Add User
+    @PostMapping("/register")
+    public ResponseEntity<ResponseDTO> addUserInBookStore( @Valid @RequestBody UserDTO userDTO){
+        UserRegistration newUser= new UserRegistration(userRegistrationService.addUser(userDTO));
+        ResponseDTO responseDTO=new ResponseDTO("User Registered Successfully",newUser);
+        return new ResponseEntity(responseDTO, HttpStatus.CREATED);
+    }
+
+    
     //Get All Users
     @GetMapping(value = "/getAll")
     public ResponseEntity<String> getAllUser()
@@ -40,6 +70,16 @@ public class UserRegistrationController {
     }
 
 
+    //Get All Users
+    @GetMapping(value = "/getuserById/{id}")
+    public ResponseEntity<String> getAllUserById(@PathVariable int id)
+    {
+        UserRegistration user = userRegistrationService.getUserByID(id);
+        ResponseDTO dto = new ResponseDTO("User retrieved successfully ",user);
+        return new ResponseEntity(dto,HttpStatus.OK);//
+    }
+
+    
     @GetMapping(value = "/getAll/{token}")
     public ResponseEntity<ResponseDTO> getAllUserDataByToken(@PathVariable String token)
     {
@@ -56,30 +96,32 @@ public class UserRegistrationController {
                 userRegistrationService.getUserByEmailId(emailId)), HttpStatus.OK);
     }
 
-    //Get user by user id
-    @GetMapping("/getBy/{token}")
+    //Get user by user token
+    @GetMapping("/getIdByToken/{token}")
     public ResponseEntity<ResponseDTO> getUserById(@PathVariable String token) {
         return new ResponseEntity<ResponseDTO>( new
                 ResponseDTO("Get User Data By Id",
                 userRegistrationService.getUserById(token)), HttpStatus.OK);
     }
 
-    //Add User
-    @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> addUserInBookStore( @Valid @RequestBody UserDTO userDTO){
-        String newUser= userRegistrationService.addUser(userDTO);
-        ResponseDTO responseDTO=new ResponseDTO("User Registered Successfully",newUser);
-        return new ResponseEntity(responseDTO, HttpStatus.CREATED);
-    }
-
+   
      //Forget password by email
-    @PostMapping("/forgotPassword")
+    @PostMapping("/forgotpassword")
     public ResponseEntity<String> forgotPassword(@RequestParam String email, @RequestParam String password) {
         String resp = userRegistrationService.forgotPassword(email,password);
         return new ResponseEntity(resp, HttpStatus.OK);
     }
+    
+    // Update user by id 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updateRecordById(@PathVariable Integer id,@RequestBody UserDTO userDTO){
+        UserRegistration entity = userRegistrationService.updateRecordById(id,userDTO);
+        ResponseDTO dto = new ResponseDTO("User Record updated successfully",entity);
+        return new ResponseEntity(dto,HttpStatus.ACCEPTED);
+    }
 
-    //Update user by id
+
+    //Update user by email
     @PutMapping("/updateUserByEmail/{email}")
     public ResponseEntity<ResponseDTO> updateUserById(@PathVariable String email,@Valid @RequestBody UserDTO userDTO){
         UserRegistration updateUser= userRegistrationService.updateUser(email,userDTO);
@@ -87,7 +129,7 @@ public class UserRegistrationController {
         return new ResponseEntity(dto,HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/update/{token}")
+    @PutMapping("/updatebyToken/{token}")
     public ResponseEntity<String> updateRecordById(@PathVariable String token,@Valid @RequestBody UserDTO userDTO){
         UserRegistration entity = userRegistrationService.updateRecordByToken(token,userDTO);
         ResponseDTO dto = new ResponseDTO("User Record updated successfully",entity);

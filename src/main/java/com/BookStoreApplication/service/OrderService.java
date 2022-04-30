@@ -24,15 +24,16 @@ public class OrderService implements IOrderService {
     private BookStoreRepository bookRepo;
     @Autowired
     private UserRegistrationRepository userRepo;
-
+//  book.get().setQuantity(book.get().getQuantity() - orderdto.getQuantity());
     public Order insertOrder(OrderDTO orderdto) {
-        Optional<Book> book = bookRepo.findById(orderdto.getId());
+        Optional<Book> book = bookRepo.findById(orderdto.getBookId());
         Optional<UserRegistration> user = userRepo.findById(orderdto.getUserId());
-        if (book.isPresent() && user.isPresent()) {
+        if (book.isPresent() && user.isPresent()) {  	
             if (orderdto.getQuantity()< book.get().getQuantity()) {
-                Order newOrder = new Order(book.get().getPrice(), orderdto.getQuantity(), orderdto.getAddress(), book.get(), user.get(), orderdto.isCancel());
+            System.out.println("The BOOK PRICE IS :>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+book.get().getPrice());
+                Order newOrder = new Order(book.get().getPrice(),orderdto.getQuantity(), orderdto.getAddress(), book.get(), user.get(), orderdto.isCancel(),book.get().getBookName());
                 orderRepo.save(newOrder);
-                log.info("Order record inserted successfully");
+                book.get().setQuantity(book.get().getQuantity() - orderdto.getQuantity());
                 return newOrder;
             } else {
                 throw new BookStoreException("Requested quantity is not available");
@@ -41,35 +42,37 @@ public class OrderService implements IOrderService {
             throw new BookStoreException("Book or User doesn't exists");
         }
     }
-
     public List<Order> getAllOrderRecords() {
         List<Order> orderList = orderRepo.findAll();
-        log.info("ALL order records retrieved successfully");
         return orderList;
     }
+    
+//    public List<Order> getAllOrderRecords() {
+//        List<Order> orderList = orderRepo.listOrder();
+//        return orderList;
+//    }
 
     public Order getOrderRecord(Integer id) {
         Optional<Order> order = orderRepo.findById(id);
         if (order.isEmpty()) {
             throw new BookStoreException("Order Record doesn't exists");
         } else {
-            log.info("Order record retrieved successfully for id " + id);
             return order.get();
         }
     }
 
     public Order updateOrderRecord(Integer id, OrderDTO dto) {
         Optional<Order> order = orderRepo.findById(id);
-        Optional<Book> book = bookRepo.findById(dto.getId());
+        Optional<Book> book = bookRepo.findById(dto.getBookId())
+        		;
         Optional<UserRegistration> user = userRepo.findById(dto.getUserId());
         if (order.isEmpty()) {
             throw new BookStoreException("Order Record doesn't exists");
         } else {
             if (book.isPresent() && user.isPresent()) {
                 if (dto.getQuantity() < book.get().getQuantity()) {
-                    Order newOrder = new Order(id, book.get().getPrice(), dto.getQuantity(), dto.getAddress(), book.get(), user.get(), dto.isCancel());
+                    Order newOrder = new Order(id, dto.getQuantity(), dto.getAddress(), book.get(), user.get(), dto.isCancel(),book.get().getBookName());
                     orderRepo.save(newOrder);
-                    log.info("Order record updated successfully for id " + id);
                     return newOrder;
                 } else {
                     throw new BookStoreException("Requested quantity is not available");
@@ -87,7 +90,6 @@ public class OrderService implements IOrderService {
             throw new BookStoreException("Order Record doesn't exists");
         } else {
             orderRepo.deleteById(id);
-            log.info("Order record deleted successfully for id " + id);
             return order.get();
         }
     }

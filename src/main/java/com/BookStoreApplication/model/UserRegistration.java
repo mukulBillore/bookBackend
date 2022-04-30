@@ -11,7 +11,9 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 public class UserRegistration {
-    @Id
+    
+
+	@Id
     @GeneratedValue
     private Integer userId;
     private String firstName;
@@ -19,8 +21,49 @@ public class UserRegistration {
     private String email;
     private String address;
     private String password;
+    
+    public UserRegistration() {
+		super();
+	}
+    
 
-    public UserRegistration(UserDTO userDTO){
+    public Integer getUserId() {
+		return userId;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public UserRegistration(UserDTO userDTO){
         this.userId=getUserId();
         this.firstName= userDTO.getFirstName();
         this.lastName= userDTO.getLastName();
@@ -45,7 +88,18 @@ public class UserRegistration {
         this.password= userDTO.getPassword();
     }
 
-    public void updateUser(UserDTO user) {
+    public UserRegistration(UserRegistration user) {
+        this.userId=userId;
+        this.firstName= user.getFirstName();
+        this.lastName= user.getLastName();
+        this.address= user.getAddress();
+        this.email= user.getEmail();
+        this.password= user.getPassword();
+    
+    }
+
+
+	public void updateUser(UserDTO user) {
         this.firstName= user.getFirstName();
         this.lastName=user.getLastName();
         this.email= user.getEmail();

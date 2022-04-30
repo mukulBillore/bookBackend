@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/order")
+@CrossOrigin
 
 public class OrderController {
     @Autowired
@@ -25,12 +26,20 @@ public class OrderController {
         ResponseDTO dto = new ResponseDTO("User registered successfully !",newOrder);
         return new ResponseEntity(dto, HttpStatus.CREATED);
     }
+//    @GetMapping("/retrieveAllOrders")
+//    public ResponseEntity<ResponseDTO> getAllOrderRecords(){
+//        List<Order> newOrder = orderService.getAllOrderRecords();
+//        ResponseDTO dto = new ResponseDTO("All records retrieved successfully !",newOrder);
+//        return new ResponseEntity(dto,HttpStatus.OK);
+//    }
+    
     @GetMapping("/retrieveAllOrders")
     public ResponseEntity<ResponseDTO> getAllOrderRecords(){
         List<Order> newOrder = orderService.getAllOrderRecords();
         ResponseDTO dto = new ResponseDTO("All records retrieved successfully !",newOrder);
         return new ResponseEntity(dto,HttpStatus.OK);
-    }
+    } 
+    
     @GetMapping("/retrieveOrder/{id}")
     public ResponseEntity<ResponseDTO> getBookRecord(@PathVariable Integer id){
         Order newOrder = orderService.getOrderRecord(id);

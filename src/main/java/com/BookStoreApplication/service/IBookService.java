@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IBookService {
     Book createBook(BookDTO bookDTO);
 
-    Optional<Book> getBookDataById(int BookId);
+    Book getBookDataById(int BookId);
 
     List<Book> getAllBookData();
 
@@ -16,11 +16,12 @@ public interface IBookService {
 
     Object deleteRecordByToken(int BookId);
 
-    Optional<Book> getBookByName(String bookName);
+    List<Book> getBookByName(String bookName);
 
     List<Book> sortedListOfBooksInAscendingOrder();
 
     List<Book> sortedListOfBooksInDescendingOrder();
 
     Book updateQuantity(Integer id, Integer quantity);
+     
 }

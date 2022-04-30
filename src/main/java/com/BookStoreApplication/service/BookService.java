@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class BookService implements IBookService{
 
     @Autowired
@@ -25,12 +24,12 @@ public class BookService implements IBookService{
     }
 
     @Override
-    public Optional<Book> getBookDataById(int BookId) {
+    public Book getBookDataById(int BookId) {
         Optional<Book> getBook=bookStoreRepository.findById(BookId);
         if(getBook.isEmpty()){
             throw new BookStoreException("Book Store Details for id not found");
         }
-        return getBook;
+        return getBook.get();
 
     }
 
@@ -68,12 +67,13 @@ public class BookService implements IBookService{
 
 
     @Override
-    public Optional<Book> getBookByName(String bookName) {
-        Optional<Book> findBook= Optional.ofNullable(bookStoreRepository.findByBookName(bookName));
-        if(findBook.isEmpty()){
-            throw new BookStoreException(" Details for provided Book is not found");
+    public List <Book> getBookByName(String bookName) {
+        
+        List<Book> listOfBooks = bookStoreRepository.findByBookName(bookName);
+        if(listOfBooks.isEmpty()) {
+        	throw new BookStoreException("No book with this  name sorry !!");
         }
-        return findBook;
+        return listOfBooks;
     }
 
     @Override
@@ -97,7 +97,6 @@ public class BookService implements IBookService{
         else {
             book.get().setQuantity(quantity);
             bookStoreRepository.save(book.get());
-            log.info("Quantity for book record updated successfully for id "+id);
             return book.get();
         }
     }
